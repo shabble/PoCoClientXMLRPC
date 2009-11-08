@@ -1,0 +1,14 @@
+MANIFEST
+README
+LICENSE
+Todo
+Changes
+Makefile.PL
+lib/POE/Component/Server/XMLRPC.pm
+lib/POE/Component/Client/XMLRPC.pm
+t/001_load_client.t
+t/001_load_server.t
+t/002_server_client.t
+t/003_client_only.t
+t/004_server_only.t
+
