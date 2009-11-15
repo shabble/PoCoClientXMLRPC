@@ -17,7 +17,8 @@ use POE::Component::Server::XMLRPC;
 use Data::Dumper;
 use POE::Component::Server::HTTP; # for exports of RC_
 
-#plan tests => 13;
+use Carp;$SIG{__WARN__} = sub {Carp::cluck @_};
+
 my $debug = $ENV{PERL_DEBUG} // 0;
 
 #TODO: abstract this out so different broken requests can be sent.
@@ -36,7 +37,7 @@ create_client_session();
 $poe_kernel->run;
 
 # test different session_mapping regexes.
-diag 'testing alternate session mapping';
+diag 'testing alternate session mapping' if $debug;
 
 create_server(session_mapping => qr|^/(.+)$|);
 create_client()->uri('http://localhost:12345/serv_session');
@@ -98,17 +99,19 @@ create_client_session(on_fault => sub {
 $poe_kernel->run;
 
 # handler that doesn't respond
-diag("timeouts");
-create_server(debug => 1);
+diag("timeouts") if $debug;
+create_server(debug => $debug);
 
 my $x = create_client(timeout => 0.5);
 $x->uri('http://localhost:12345/?session=serv_session');
-diag($x->timeout);
+diag($x->timeout) if $debug;
 
 create_server_session(states => {
                                  sleepy => sub {
-                                     diag("returning pending response RC_WAIT");
-                                     return RC_WAIT;
+                                   my $t = $_[ARG0];
+                                   diag("returning pending response RC_WAIT") if $debug;
+                                   $t->return(RC_WAIT);
+
                                  }
                                 },
                       handlers => ['sleepy']
@@ -126,11 +129,11 @@ $poe_kernel->run;
 
 
 # send a fault from within a handler.
-create_server(debug => 1);
+create_server(debug => $debug);
 
-my $x = create_client(timeout => 0.5);
+$x = create_client(timeout => 0.5);
 $x->uri('http://localhost:12345/?session=serv_session');
-diag($x->timeout);
+diag($x->timeout) if $debug;
 
 create_server_session(states => {
                                  faulty => sub {
@@ -145,9 +148,9 @@ create_server_session(states => {
 
 create_client_session(on_fault => sub {
                           my $arg = shift;
-                          is($arg->{faultCode}, 408, 'got timeout response');
+                          is($arg->{faultCode}, 402, 'Got payment required error');
                           like($arg->{faultString},
-                               qr/timed out/);
+                               qr/Payment Required/);
                       },
                       call => 'faulty');
 
@@ -261,7 +264,7 @@ sub create_client_session {
                                if ($options->{on_response}) {
                                    $options->{on_response}->($arg, @_);
                                } else {
-                                   print "Got response:\n", Dumper($arg),$/;
+                                   diag("Got response:\n". Dumper($arg).$/) if $debug;
                                }
                                $poe_kernel->yield('shutdown');
                            },
@@ -270,7 +273,7 @@ sub create_client_session {
                                if ($options->{on_fault}) {
                                    $options->{on_fault}->($arg, @_);
                                } else {
-                                   print "Got fault:\n", Dumper($arg),$/;
+                                   diag("Got fault:\n". Dumper($arg).$/) if $debug;
                                }
 
                                $poe_kernel->yield('shutdown');

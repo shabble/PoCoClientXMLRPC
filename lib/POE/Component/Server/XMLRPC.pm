@@ -174,8 +174,9 @@ event 'request_handler' => sub {
     $req->header(Connection => 'close');
 
     my $validated_request = $self->_validate_request($req);
+
     unless ($validated_request->[0] == 200) {
-        return _request_failed($resp, @$validated_request);
+        return build_fault_response($resp, @{$validated_request});
     }
 
     my $target_session = $validated_request->[1];
@@ -253,20 +254,17 @@ sub _validate_request {
     }
 }
 
-#TODO: fix this up to use XMLRPC::Serializer->envelope.
 sub build_fault_response {
   my ($response, $fault_code, $fault_string, $result_description) = @_;
+
   $fault_code ||= 500;
   $fault_string ||= "Unknown Fault";
   $result_description ||= "Unknown cause";
 
   my $response_content
     = XMLRPC::Serializer
-      ->envelope(
-                 fault => {
-                           faultCode => $fault_code,
-                           faultString => "$fault_string: $result_description"
-                          });
+      ->envelope('fault', $fault_code, "$fault_string: $result_description");
+
   $response->code(200);
   $response->header("Content-Type", "text/xml");
   $response->header("Content-Length", length($response_content));
@@ -432,17 +430,17 @@ server in the SYNOPSIS.
 
 =head1 BUGS
 
-This project is a modified version of
-POE::Component::Server::SOAP by Rocco Caputo.  Of that, he
-writes:
+This project is a modified version of POE::Component::Server::SOAP by
+Rocco Caputo.  Of that, he writes:
 
-  This project was created over the course of two days, which attests to
-  the ease of writing new POE components.  However, I did not learn XMLRPC
-  in depth, so I am probably not doing things the best they could.
+  This project was created over the course of two days, which attests
+  to the ease of writing new POE components.  However, I did not learn
+  XMLRPC in depth, so I am probably not doing things the best they
+  could.
 
-Thanks to his code, I've managed to create this module in one day
-(on only my second day of using POE).  There's gotta be bugs
-here.  Please use http://rt.cpan.org/ to report them.
+Thanks to his code, I've managed to create this module in one day (on
+only my second day of using POE).  There's gotta be bugs here.  Please
+use http://rt.cpan.org/ to report them.
 
 =head1 SEE ALSO
 

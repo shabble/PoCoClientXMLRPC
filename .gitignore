@@ -1,0 +1,8 @@
+*~
+POE-Component*.gz
+blib
+_build
+Build
+Makefile.PL
+META.yml
+

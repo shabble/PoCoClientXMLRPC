@@ -3,6 +3,7 @@ README
 LICENSE
 Todo
 Changes
+Build.PL
 Makefile.PL
 lib/POE/Component/Server/XMLRPC.pm
 lib/POE/Component/Client/XMLRPC.pm
@@ -12,3 +13,4 @@ t/002_server_client.t
 t/003_client_only.t
 t/004_server_only.t
 
+META.yml

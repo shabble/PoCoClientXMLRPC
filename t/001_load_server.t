@@ -9,7 +9,7 @@ use Data::Dumper;
 
 plan tests => 14;
 
-BEGIN { use_ok('POE::Component::Server::XMLRPC') }
+use_ok('POE::Component::Server::XMLRPC');
 my $xs;
 
 $poe_kernel->run(); # silence the 'kernel not run' warning.

@@ -5,7 +5,7 @@ use warnings;
 
 use lib qw/./;
 
-use Test::More;
+use Test::More skip_all => "No tests yet";
 use Test::Exception;
 
 #sub POE::Kernel::TRACE_SESSIONS() { 1 }

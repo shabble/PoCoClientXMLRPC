@@ -8,7 +8,7 @@ use POE;
 
 plan tests => 13;
 
-BEGIN { use_ok('POE::Component::Client::XMLRPC') }
+use_ok('POE::Component::Client::XMLRPC');
 my $xc;
 
 $poe_kernel->run(); # silence the 'kernel not run' warning.
