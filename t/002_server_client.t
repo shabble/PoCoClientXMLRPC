@@ -17,8 +17,6 @@ use POE::Component::Server::XMLRPC;
 use Data::Dumper;
 use POE::Component::Server::HTTP; # for exports of RC_
 
-use Carp;$SIG{__WARN__} = sub {Carp::cluck @_};
-
 my $debug = $ENV{PERL_DEBUG} // 0;
 
 #TODO: abstract this out so different broken requests can be sent.
