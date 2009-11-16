@@ -4,5 +4,6 @@ blib
 _build
 Build
 Makefile.PL
+Makefile
 META.yml
 
