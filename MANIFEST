@@ -4,7 +4,6 @@ LICENSE
 Todo
 Changes
 Build.PL
-Makefile.PL
 lib/POE/Component/Server/XMLRPC.pm
 lib/POE/Component/Client/XMLRPC.pm
 t/001_load_client.t
